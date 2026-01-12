@@ -1,0 +1,53 @@
+using Microsoft.Playwright;
+using NUnit.Framework;
+using System.Threading.Tasks;
+
+namespace PlaywrightDemo.Tests
+{
+    public class LoginTest
+    {
+        private IPlaywright _playwright;
+        private IBrowser _browser;
+        private IPage _page;
+
+        
+        public async Task Setup()
+        {
+            _playwright = await Playwright.CreateAsync();
+            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            {
+                Headless = false 
+                SlowMo = 500
+
+            });
+
+            var context = await _browser.NewContextAsync();
+            _page = await context.NewPageAsync();
+        }
+
+        
+        public async Task Login_To_SnipeIt_Demo()
+        {
+            // Navigate to login page
+            await _page.GotoAsync("https://demo.snipeitapp.com/login");
+
+            // Enter credentials
+            await _page.FillAsync("#username", "admin");
+            await _page.FillAsync("#password", "password");
+
+            // Click Login
+            await _page.ClickAsync("button[type='submit']");
+
+            // Verify successful login (Dashboard visible)
+            await _page.WaitForURLAsync("**/dashboard");
+            Assert.That(_page.Url, Does.Contain("dashboard"));
+        }
+
+        [TearDown]
+        public async Task TearDown()
+        {
+            await _browser.CloseAsync();
+            _playwright.Dispose();
+        }
+    }
+}

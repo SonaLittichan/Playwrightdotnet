@@ -1,0 +1,49 @@
+using Microsoft.Playwright;
+using NUnit.Framework;
+using PlaywrightDemo.Pages;
+using System.Threading.Tasks;
+
+namespace PlaywrightDemo.Tests
+{
+    public class AssetTests
+    {
+        private IPlaywright _playwright;
+        private IBrowser _browser;
+        private IPage _page;
+
+        [SetUp]
+        public async Task Setup()
+        {
+            _playwright = await Playwright.CreateAsync();
+            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            {
+                Headless = false,
+                SlowMo = 500
+            });
+
+            var context = await _browser.NewContextAsync();
+            _page = await context.NewPageAsync();
+        }
+
+        [Test]
+        public async Task Create_And_Verify_Asset_Test()
+        {
+            var loginPage = new LoginPage(_page);
+            await loginPage.LoginAsync("admin", "password");
+
+            var assetPage = new AssetPage(_page);
+            await assetPage.CreateMacbookAssetAsync();
+
+            bool assetFound = await assetPage.IsAssetPresentInListAsync();
+
+            Assert.That(assetFound, Is.True, "Asset was not found in the asset list");
+        }
+
+        [TearDown]
+        public async Task TearDown()
+        {
+            await _browser.CloseAsync();
+            _playwright.Dispose();
+        }
+    }
+}

@@ -499,3 +499,4 @@ C:\Users\Haris G\PlaywrightDemo\obj\Debug\net10.0\refint\PlaywrightDemo.dll
 C:\Users\Haris G\PlaywrightDemo\obj\Debug\net10.0\PlaywrightDemo.pdb
 C:\Users\Haris G\PlaywrightDemo\obj\Debug\net10.0\PlaywrightDemo.genruntimeconfig.cache
 C:\Users\Haris G\PlaywrightDemo\obj\Debug\net10.0\ref\PlaywrightDemo.dll
+C:\Users\Haris G\PlaywrightDemo\obj\Debug\net10.0\PlaywrightDemo.sourcelink.json

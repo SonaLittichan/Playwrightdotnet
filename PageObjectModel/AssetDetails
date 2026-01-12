@@ -1,0 +1,58 @@
+using Microsoft.Playwright;
+using System;
+using System.Threading.Tasks;
+
+namespace PlaywrightDemo.Pages
+{
+    public class AssetPage
+    {
+        private readonly IPage _page;
+
+        // Store last created asset name
+        public string LastCreatedAssetName { get; private set; }
+
+        public AssetPage(IPage page)
+        {
+            _page = page;
+        }
+
+        public async Task CreateMacbookAssetAsync()
+        {
+            await _page.GotoAsync("https://demo.snipeitapp.com/hardware/create");
+
+            LastCreatedAssetName = $"MacBook Pro 13 - {Guid.NewGuid()}";
+            await _page.FillAsync("#name", LastCreatedAssetName);
+
+            await _page.ClickAsync("#model_id");
+            await _page.TypeAsync("#model_id", "MacBook Pro 13");
+            await _page.Keyboard.PressAsync("Enter");
+
+            await _page.SelectOptionAsync("#status_id", new SelectOptionValue
+            {
+                Label = "Ready to Deploy"
+            });
+
+            await _page.CheckAsync("#checkout_to_user");
+
+            await _page.ClickAsync("#assigned_to");
+            await _page.Keyboard.PressAsync("ArrowDown");
+            await _page.Keyboard.PressAsync("Enter");
+
+            await _page.ClickAsync("button[type='submit']");
+            await _page.WaitForSelectorAsync("text=Success");
+        }
+
+        public async Task<bool> IsAssetPresentInListAsync()
+        {
+            await _page.GotoAsync("https://demo.snipeitapp.com/hardware");
+
+            // Search for the asset
+            await _page.FillAsync("input[type='search']", LastCreatedAssetName);
+
+            // Wait for table to update
+            await _page.WaitForTimeoutAsync(2000);
+
+            return await _page.IsVisibleAsync($"text={LastCreatedAssetName}");
+        }
+    }
+}
